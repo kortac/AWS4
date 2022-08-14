@@ -14,7 +14,7 @@ final class AWS4Tests: XCTestCase {
         var req = URLRequest(url: url)
         req.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "iam",
+        let aws = AWS4(service: .iam,
                        region: "us-east-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -43,7 +43,7 @@ final class AWS4Tests: XCTestCase {
             .data(using: .utf8)
         req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "es",
+        let aws = AWS4(service: .es,
                        region: "eu-central-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -71,7 +71,7 @@ final class AWS4Tests: XCTestCase {
         
         let date = fromISO8601("20150830T123600Z")
         
-        let aws = AWS4(service: "iam",
+        let aws = AWS4(service: .iam,
                        region: "us-east-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -130,7 +130,7 @@ final class AWS4Tests: XCTestCase {
         var req = URLRequest(url: url)
         req.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "iam",
+        let aws = AWS4(service: .iam,
                        region: "us-east-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -146,7 +146,7 @@ final class AWS4Tests: XCTestCase {
         var req = URLRequest(url: url)
         req.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "iam",
+        let aws = AWS4(service: .iam,
                        region: "us-east-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -162,7 +162,7 @@ final class AWS4Tests: XCTestCase {
         var req = URLRequest(url: url)
         req.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "iam",
+        let aws = AWS4(service: .iam,
                        region: "us-east-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
@@ -178,7 +178,7 @@ final class AWS4Tests: XCTestCase {
         var req = URLRequest(url: url)
         req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
-        let aws = AWS4(service: "es",
+        let aws = AWS4(service: .es,
                        region: "eu-central-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")

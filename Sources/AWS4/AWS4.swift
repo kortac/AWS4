@@ -3,25 +3,41 @@ import Foundation
 
 public class AWS4 {
     let region: String
-    let service: String
+    let service: Service
     let accessKeyId: String
     let secretAccessKey: String
     
-    init(service: String, region: String, accessKeyId: String, secretAccessKey: String) {
+    enum Service: CustomStringConvertible {
+        case s3
+        case es
+        case iam
+        case other(String)
+        
+        var description: String {
+            switch self {
+            case .s3: return "s3"
+            case .es: return "es"
+            case .iam: return "iam"
+            case .other(let s): return s
+            }
+        }
+    }
+    
+    init(service: Service, region: String, accessKeyId: String, secretAccessKey: String) {
         self.accessKeyId = accessKeyId
         self.secretAccessKey = secretAccessKey
         self.region = region
         self.service = service
     }
     
-    init(service: String, region: String) {
+    init(service: Service, region: String) {
         self.accessKeyId = Bundle.main.infoDictionary?["AWS_ACCESSKEYID"] as! String
         self.secretAccessKey = Bundle.main.infoDictionary?["AWS_SECRETACCESSKEY"] as! String
         self.region = region
         self.service = service
     }
     
-    init(service: String) {
+    init(service: Service) {
         self.accessKeyId = Bundle.main.infoDictionary?["AWS_ACCESSKEYID"] as! String
         self.secretAccessKey = Bundle.main.infoDictionary?["AWS_SECRETACCESSKEY"] as! String
         self.region = Bundle.main.infoDictionary?["AWS_REGION"] as! String
@@ -91,8 +107,12 @@ public class AWS4 {
                 continue
             }
             
-            sanitized.append(p.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
-                .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+            if case .s3 = service {
+                sanitized.append(p.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+            } else {
+                sanitized.append(p.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+                    .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+            }
         }
         
         if sanitized.count == 0 {
@@ -153,7 +173,7 @@ public class AWS4 {
     internal func signatureKey(date: Date) -> Data {
         let h1 = AWS4.hmac(key: "AWS4\(secretAccessKey)".data(using: .utf8)!, data: dateString(date: date))
         let h2 = AWS4.hmac(key: h1, data: region)
-        let h3 = AWS4.hmac(key: h2, data: service)
+        let h3 = AWS4.hmac(key: h2, data: service.description)
         
         return AWS4.hmac(key: h3, data: "aws4_request")
     }
