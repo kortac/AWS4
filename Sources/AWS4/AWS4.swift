@@ -80,6 +80,28 @@ public class AWS4 {
             .map { String(format: "%02hhx", $0) }.joined()
     }
     
+    private func canonical(path p: String?) -> String {
+        guard let p = p else { return "/" }
+        
+        let paths = p.split(separator: "/")
+        var sanitized: [String] = []
+        
+        for (idx, p) in paths.enumerated() {
+            if p == ".." || ((idx + 1) < paths.count && paths[idx+1] == "..") {
+                continue
+            }
+            
+            sanitized.append(p.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!
+                .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+        }
+        
+        if sanitized.count == 0 {
+            return "/"
+        }
+        
+        return "/\(sanitized.joined(separator: "/"))/"
+    }
+    
     internal func canonical(request req: URLRequest) -> String {
         var can: [String] = []
         // Docs: https://docs.aws.amazon.com/en_us/general/latest/gr/sigv4-create-canonical-request.html
@@ -88,16 +110,13 @@ public class AWS4 {
         can.append((req.httpMethod ?? "GET").uppercased())
         
         // 2. add uri
-        if let p = req.url?.path, p.count > 0 && p != "/" {
-            can.append(p.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)?
-                .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "/")
-        } else {
-            can.append("/")
-        }
+        can.append(canonical(path: req.url?.path))
         
         // 3. add query string
         if let q = req.url?.query {
             can.append(q)
+        } else {
+            can.append("")
         }
         
         // 4. add headers

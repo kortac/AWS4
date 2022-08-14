@@ -9,7 +9,7 @@ final class AWS4Tests: XCTestCase {
         return iso.date(from: s)!
     }
     
-    func testCanonicalRequest() throws {
+    func testGetCanonicalRequest() throws {
         let url = URL(string: "https://iam.amazonaws.com/?Action=ListUsers&Version=2010-05-08")!
         var req = URLRequest(url: url)
         req.addValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
@@ -30,6 +30,35 @@ final class AWS4Tests: XCTestCase {
 
         content-type;host;x-amz-date
         e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+        """
+        
+        XCTAssertEqual(aws.canonical(request: signed), canonical)
+    }
+    
+    func testPostCanonicalRequest() throws {
+        let url = URL(string: "https://search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com/funko/pop/_search")!
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.httpBody = "{ \"query\": { \"match\": { \"Search\": { \"query\": \"test\", operator: \"and\" } } } }"
+            .data(using: .utf8)
+        req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        
+        let aws = AWS4(service: "es",
+                       region: "eu-central-1",
+                       accessKeyId: "AKIDEXAMPLE",
+                       secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
+        let signed = aws.sign(request: req, date: fromISO8601("20200814T173600Z"))
+        
+        let canonical = """
+        POST
+        /funko/pop/_search/
+        
+        content-type:application/json; charset=utf-8
+        host:search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com
+        x-amz-date:20200814T173600Z
+
+        content-type;host;x-amz-date
+        fb969d2de9bd57ffa384c728859418f8f81503e65613e27e0c4381431bcf25f3
         """
         
         XCTAssertEqual(aws.canonical(request: signed), canonical)
@@ -148,5 +177,15 @@ final class AWS4Tests: XCTestCase {
         let url = URL(string: "https://search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com")!
         var req = URLRequest(url: url)
         req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        
+        let aws = AWS4(service: "es",
+                       region: "eu-central-1",
+                       accessKeyId: "AKIDEXAMPLE",
+                       secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
+        let signed = aws.sign(request: req, date: fromISO8601("20220814T172459Z"))
+        
+        let header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20220814/eu-central-1/es/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=0a5bf8a977c9792acea36fde86df441ae6d30d901cf280f7888f1d64090f917c"
+        
+        XCTAssertEqual(aws.authHeader(request: signed, date: fromISO8601("20220814T172459Z")), header)
     }
 }
