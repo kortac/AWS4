@@ -1,5 +1,7 @@
 # AWS4
 
+![Badge](https://github.com/s5zy/AWS4/actions/workflows/build.yml/badge.svg)
+
 Basic implementation of AWS Signature Version 4 in Swift for MacOS >= 10.15 and iOS >= 13.
 
 Currently only ElasticSearch (**es**), IAM (**iam**) and some S3 (**s3**) services supported. 
