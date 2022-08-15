@@ -20,7 +20,7 @@ Others may be added in the future. Feel free to open pull requests!
 let aws = AWS4()
 
 # Sign a request
-let signed = aws.sign(service: .iam, request: req)
+let signed = aws.sign(request: req, for: .iam)
 ```
 
 #### Credentials
@@ -46,7 +46,7 @@ let aws = AWS4(region: "us-east-1",
 If you have to use a different datetime than the current one, just pass it to `.sign`:
 
 ```swift
-let signed = aws.sign(service: .iam, request: req, date: date)
+let signed = aws.sign(request: req, for: .iam, date: date)
 ```
 
 ### URLRequest
