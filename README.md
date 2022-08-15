@@ -9,6 +9,12 @@ Others may be added in the future. Feel free to open pull requests!
 
 ## Installation
 
+### Swift Package Manager
+
+```swift
+.Package(url: "https://github.com/s5zy/AWS4.git", .upToNextMajor(from: "1.0.0"))
+```
+
 ```swift
 .Package(url: "https://github.com/s5zy/AWS4.git", branch: "main")
 ```
@@ -34,7 +40,7 @@ initializer. We recommend to store them in your `.xcconfig` file! Please use
 - `AWS_SECRETACCESSKEY` for your secret access key
 - `AWS_REGION` for your AWS region
 
-However you can also pass them directly to `AWS4()`, however we do **not** (⚠️) recommend
+In addition you can also pass them directly to `AWS4()`, however we do **not** (⚠️) recommend
 to hardcode your credentials!
 
 ```swift
