@@ -18,8 +18,4 @@ jobs:
       run: swift build
     - name: Run tests
       run: swift test
-    - name: Build package
-      run: swift build
-    - name: Run tests
-      run: swift test
 
