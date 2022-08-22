@@ -69,7 +69,12 @@ public class AWS4 {
         // 2. add date to headers
         req.addValue(iso8601String(date: date), forHTTPHeaderField: "X-Amz-Date")
         
-        // 3. add content length to headers
+        // 3. add content type if missing
+        if req.value(forHTTPHeaderField: "Content-Type") == nil {
+            req.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        }
+        
+        // 4. add content length to headers
         if let c = req.httpBody?.count, req.value(forHTTPHeaderField: "Content-Length") == nil {
             req.addValue("\(c)", forHTTPHeaderField: "Content-Length")
         }
