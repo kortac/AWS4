@@ -11,14 +11,14 @@ public class AWS4 {
     
     /// All supported services. Unsupported services can be used by calling
     /// `.other("ec2")`
-    enum Service: CustomStringConvertible {
+    public enum Service: CustomStringConvertible {
         case s3
         case es
         case iam
         case other(String)
         
         /// Returns the service as String. Will be used in the signature key.
-        var description: String {
+        public var description: String {
             switch self {
             case .s3: return "s3"
             case .es: return "es"
@@ -58,7 +58,7 @@ public class AWS4 {
     /// the signing, pass it as optional parameter date.
     ///
     /// - Returns: Signed request. Do **not** change any request data after calling this function!
-    func sign(request: URLRequest, for service: Service, date: Date = Date()) -> URLRequest {
+    public func sign(request: URLRequest, for service: Service, date: Date = Date()) -> URLRequest {
         var req = request
         
         // 1. add host to headers
