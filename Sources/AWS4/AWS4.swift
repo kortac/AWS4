@@ -69,7 +69,12 @@ public class AWS4 {
         // 2. add date to headers
         req.addValue(iso8601String(date: date), forHTTPHeaderField: "X-Amz-Date")
         
-        // 3. add authorization header
+        // 3. add content length to headers
+        if let c = req.httpBody?.count, req.value(forHTTPHeaderField: "Content-Length") == nil {
+            req.addValue("\(c)", forHTTPHeaderField: "Content-Length")
+        }
+        
+        // 4. add authorization header
         req.addValue(authHeader(service: service, request: req, date: date), forHTTPHeaderField: "Authorization")
         
         return req
@@ -78,7 +83,7 @@ public class AWS4 {
     /// Headers that will be part of the canonical request. Headers have to be sorted alphabetically and
     /// in lowercase.
     private var headers: [String] {
-        ["Host", "X-Amz-Date", "Content-Type"].map { $0.lowercased() }.sorted { $0 < $1 }
+        ["Host", "X-Amz-Date", "Content-Type", "Content-Length"].map { $0.lowercased() }.sorted { $0 < $1 }
     }
     
     /// Headers that will be signed. Right now all headers will be signed.
@@ -116,9 +121,6 @@ public class AWS4 {
     ///
     /// - Returns: Signature of the request, service and date.
     internal func signatureOf(request req: URLRequest, for service: Service, date: Date) -> String {
-        let k = signatureKey(service: service, date: date).map { String(format: "%02hhx", $0) }.joined()
-        print("key: \(k)")
-        
         return AWS4.hmac(key: signatureKey(service: service, date: date),
                          data: toSign(service: service, request: req, date: date))
             .map { String(format: "%02hhx", $0) }.joined()
@@ -152,7 +154,7 @@ public class AWS4 {
             return "/"
         }
         
-        return "/\(sanitized.joined(separator: "/"))/"
+        return "/\(sanitized.joined(separator: "/"))"
     }
     
     /// Generates the canonical request as described in
