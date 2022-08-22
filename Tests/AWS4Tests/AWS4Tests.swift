@@ -34,7 +34,7 @@ final class AWS4Tests: XCTestCase {
         host:iam.amazonaws.com
         x-amz-date:20150830T123600Z
 
-        content-type;host;x-amz-date
+        content-length;content-type;host;x-amz-date
         e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
         """
         
@@ -61,13 +61,14 @@ final class AWS4Tests: XCTestCase {
         
         let canonical = """
         POST
-        /type/index/_search/
+        /type/index/_search
         
+        content-length:76
         content-type:application/json; charset=utf-8
         host:search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com
         x-amz-date:20200814T173600Z
 
-        content-type;host;x-amz-date
+        content-length;content-type;host;x-amz-date
         fb969d2de9bd57ffa384c728859418f8f81503e65613e27e0c4381431bcf25f3
         """
         
@@ -94,7 +95,7 @@ final class AWS4Tests: XCTestCase {
         AWS4-HMAC-SHA256
         20150830T123600Z
         20150830/us-east-1/iam/aws4_request
-        f536975d06c0309214f805bb90ccff089219ecd68b2577efef23edd43b7e1a59
+        7da6b6ec66ac0dbb6de1f27eb1852abde3b6e61a512c8c861a4ac52a200c22c7
         """
         
         XCTAssertEqual(aws.toSign(service: .iam, request: signed, date: date), toSign)
@@ -187,7 +188,7 @@ final class AWS4Tests: XCTestCase {
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
         let signed = aws.sign(request: req, for: .iam, date: fromISO8601("20150830T123600Z"))
         
-        let signature = "5d672d79c15b13162d9279b0855cfba6789a8edb4c82c400e06b5924a6f2b5d7"
+        let signature = "ccbd716138864c2aeaad063ac068d07724892db43da1b0056c7b7630ddfea670"
         
         XCTAssertEqual(aws.signatureOf(request: signed, for: .iam, date: fromISO8601("20150830T123600Z")), signature)
     }
@@ -206,7 +207,7 @@ final class AWS4Tests: XCTestCase {
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
         let signed = aws.sign(request: req, for: .iam, date: fromISO8601("20150830T123600Z"))
         
-        let header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=5d672d79c15b13162d9279b0855cfba6789a8edb4c82c400e06b5924a6f2b5d7"
+        let header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20150830/us-east-1/iam/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date, Signature=ccbd716138864c2aeaad063ac068d07724892db43da1b0056c7b7630ddfea670"
         
         XCTAssertEqual(aws.authHeader(service: .iam, request: signed, date: fromISO8601("20150830T123600Z")), header)
     }
@@ -215,21 +216,20 @@ final class AWS4Tests: XCTestCase {
     /// Checks if the authorization header is generated properly for POST requests.
     ///
     func testESAuthorizationHeader() throws {
-        let url = URL(string: "https://search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com")!
+        let url = URL(string: "https://search-test-xxxxxxxxxxxxxxxxxxxxxxxxxx.eu-central-1.es.amazonaws.com/funko/pop/_search")!
         var req = URLRequest(url: url)
         
         req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         req.httpMethod = "POST"
         req.httpBody = "{ \"query\": { \"match\": { \"Search\": { \"query\": \"test\", operator: \"and\" } } } }"
             .data(using: .utf8)
-        req.addValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
         
         let aws = AWS4(region: "eu-central-1",
                        accessKeyId: "AKIDEXAMPLE",
                        secretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY")
         let signed = aws.sign(request: req, for: .es, date: fromISO8601("20220814T172459Z"))
         
-        let header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20220814/eu-central-1/es/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=a7515571c493e29a32c1f33b6a11d3ba3eccaae1fd173633822188dc4f4c0ac2"
+        let header = "AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20220814/eu-central-1/es/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date, Signature=7683e23d8a39634da45bb3fe30cba250fd42f8ae8589aed7357b072511967aa5"
         
         XCTAssertEqual(aws.authHeader(service: .es, request: signed, date: fromISO8601("20220814T172459Z")), header)
     }
