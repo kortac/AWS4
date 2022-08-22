@@ -256,6 +256,7 @@ public class AWS4 {
     private func dateString(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
         
         return formatter.string(from: date)
     }
@@ -266,6 +267,7 @@ public class AWS4 {
     private func iso8601String(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd'T'HHmmss'Z'"
+        formatter.timeZone = TimeZone(abbreviation: "UTC")
         
         return formatter.string(from: date)
     }
