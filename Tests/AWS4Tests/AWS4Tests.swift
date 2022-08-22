@@ -8,6 +8,7 @@ final class AWS4Tests: XCTestCase {
     private func fromISO8601(_ s: String) -> Date {
         let iso = DateFormatter()
         iso.dateFormat = "yyyyMMdd'T'HHmmss'Z'"
+        iso.timeZone = TimeZone(abbreviation: "UTC")
         
         return iso.date(from: s)!
     }
