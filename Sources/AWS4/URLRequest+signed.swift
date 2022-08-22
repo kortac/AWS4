@@ -12,7 +12,7 @@ extension URLRequest {
     /// date can be given that will be stored in X-Amz-Date header.
     ///
     /// - Returns: Signed url request. Do **not** change any request data after calling this function!
-    func signed(service: AWS4.Service, region: String, accessKeyId: String,
+    public func signed(service: AWS4.Service, region: String, accessKeyId: String,
                 secretAccessKey: String, date: Date = Date()) -> URLRequest {
         let aws = AWS4(region: region, accessKeyId: accessKeyId, secretAccessKey: secretAccessKey)
         
@@ -24,7 +24,7 @@ extension URLRequest {
     /// access key will be retrieved from Info.plist key AWS\_SECRETACCESSKEY.
     ///
     /// - Returns: Signed url request. Do **not** change any request data after calling this function!
-    func signed(service: AWS4.Service, region: String, date: Date = Date()) -> URLRequest {
+    public func signed(service: AWS4.Service, region: String, date: Date = Date()) -> URLRequest {
         let aws = AWS4(region: region)
 
         return aws.sign(request: self, for: service, date: date)
@@ -36,7 +36,7 @@ extension URLRequest {
     /// from Info.plist key AWS\_REGION.
     ///
     /// - Returns: Signed url request. Do **not** change any request data after calling this function!
-    func signed(service: AWS4.Service, date: Date = Date()) -> URLRequest {
+    public func signed(service: AWS4.Service, date: Date = Date()) -> URLRequest {
         let aws = AWS4()
 
         return aws.sign(request: self, for: service, date: date)
